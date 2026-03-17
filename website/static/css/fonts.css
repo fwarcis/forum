@@ -1,0 +1,125 @@
+@font-face {
+    font-family: 'Azeret Mono';
+    src: url('/static/fonts/azeret_mono/AzeretMono-Thin.woff2') format('woff2');
+    font-weight: 100;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Azeret Mono';
+    src: url('/static/fonts/azeret_mono/AzeretMono-ThinItalic.woff2') format('woff2');
+    font-weight: 100;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Azeret Mono';
+    src: url('/static/fonts/azeret_mono/AzeretMono-ExtraLight.woff2') format('woff2');
+    font-weight: 200;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Azeret Mono';
+    src: url('/static/fonts/azeret_mono/AzeretMono-ExtraLightItalic.woff2') format('woff2');
+    font-weight: 200;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Azeret Mono';
+    src: url('/static/fonts/azeret_mono/AzeretMono-Light.woff2') format('woff2');
+    font-weight: 300;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Azeret Mono';
+    src: url('/static/fonts/azeret_mono/AzeretMono-LightItalic.woff2') format('woff2');
+    font-weight: 300;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Azeret Mono';
+    src: url('/static/fonts/azeret_mono/AzeretMono-Regular.woff2') format('woff2');
+    font-weight: 400;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Azeret Mono';
+    src: url('/static/fonts/azeret_mono/AzeretMono-Italic.woff2') format('woff2');
+    font-weight: 400;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Azeret Mono';
+    src: url('/static/fonts/azeret_mono/AzeretMono-Medium.woff2') format('woff2');
+    font-weight: 500;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Azeret Mono';
+    src: url('/static/fonts/azeret_mono/AzeretMono-MediumItalic.woff2') format('woff2');
+    font-weight: 500;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Azeret Mono';
+    src: url('/static/fonts/azeret_mono/AzeretMono-SemiBold.woff2') format('woff2');
+    font-weight: 600;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Azeret Mono';
+    src: url('/static/fonts/azeret_mono/AzeretMono-SemiBoldItalic.woff2') format('woff2');
+    font-weight: 600;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Azeret Mono';
+    src: url('/static/fonts/azeret_mono/AzeretMono-Bold.woff2') format('woff2');
+    font-weight: 700;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Azeret Mono';
+    src: url('/static/fonts/azeret_mono/AzeretMono-BoldItalic.woff2') format('woff2');
+    font-weight: 700;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Azeret Mono';
+    src: url('/static/fonts/azeret_mono/AzeretMono-ExtraBold.woff2') format('woff2');
+    font-weight: 800;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Azeret Mono';
+    src: url('/static/fonts/azeret_mono/AzeretMono-ExtraBoldItalic.woff2') format('woff2');
+    font-weight: 800;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Azeret Mono';
+    src: url('/static/fonts/azeret_mono/AzeretMono-Black.woff2') format('woff2');
+    font-weight: 900;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Azeret Mono';
+    src: url('/static/fonts/azeret_mono/AzeretMono-BlackItalic.woff2') format('woff2');
+    font-weight: 900;
+    font-style: italic;
+}

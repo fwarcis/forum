@@ -1,0 +1,53 @@
+{{define "content"}}
+<article style="max-width: 480px; margin: auto; --pico-block-spacing-vertical: 1.5rem;">
+    <hgroup>
+        <h1>Registration</h1>
+    </hgroup>
+
+    <form action="/register" method="POST">
+        <label for="email">Email</label>
+        <input
+            type="email"
+            id="email"
+            name="email"
+            placeholder="example@mail.com"
+            autocomplete="email"
+            required
+        />
+
+        <label for="login">Login</label>
+        <input
+            type="text"
+            id="login"
+            name="login"
+            placeholder="login"
+            autocomplete="login"
+            minlength="7"
+            maxlength="32"
+            pattern="[a-zA-Z0-9!@#$%^&amp;()_]+"
+            aria-describedby="login-hint"
+            required
+        />
+        <small id="login-hint">
+            From 3 to 32 characters: Latin letters and digits; !, @, #, $, %, ^, &amp;, (, ) and _
+        </small>
+
+        <label for="password">Password</label>
+        <input
+            type="password"
+            id="password"
+            name="password"
+            placeholder="••••••••"
+            autocomplete="new-password"
+            minlength="8"
+            required
+        />
+
+        <button type="submit">Register</button>
+    </form>
+
+    <footer>
+        <small>Already have an account? <a href="/login">Log in</a></small>
+    </footer>
+</article>
+{{end}}

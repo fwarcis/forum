@@ -1,0 +1,5 @@
+:root, :host {
+    --pico-font-family-monospace: 'Azeret Mono', monospace;
+    --pico-font-family: var(--pico-font-family-monospace);
+}
+
