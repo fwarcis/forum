@@ -4,7 +4,7 @@ import (
 	"os/exec"
 	"path/filepath"
 
-	"forum/internal/fsys"
+	"forum/internal/common/system/fsys"
 )
 
 var staticDir = projectRoot.Join("website", "static").Must()

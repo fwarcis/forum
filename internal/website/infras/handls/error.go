@@ -1,10 +1,10 @@
-package handlers
+package handls
 
 import (
 	"log/slog"
 	"net/http"
 
-	"forum/internal/website/templs"
+	"forum/internal/website/views/templs"
 )
 
 func internalServerErrorPlainMsg(w http.ResponseWriter, msg string) {

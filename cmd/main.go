@@ -5,12 +5,14 @@ import (
 	"net/http"
 	"os"
 
+	"forum/internal/passhash"
 	"forum/internal/projfs"
 	"forum/internal/servs"
 	"forum/internal/storage"
 	"forum/internal/website/handlers"
 
 	_ "github.com/mattn/go-sqlite3"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func main() {
@@ -29,25 +31,35 @@ func main() {
 		slog.Error(err.Error())
 		return
 	}
+	userRepo := storage.NewUserRepo(db)
 
-	userRepo := storage.NewSQLite3UserRepo(db)
-
-	http.HandleFunc("/", handlers.NotFoundOrRedirect)
-
-	staticDir := http.Dir(projfs.StaticDir())
-	http.Handle("GET /static/",
-		http.StripPrefix("/static/", http.FileServer(staticDir)))
-
-	http.HandleFunc("GET /register", handlers.UserRegisterPage)
-	http.HandleFunc("POST /register",
-		handlers.UserRegister(servs.NewUserService(userRepo)))
-
-	http.HandleFunc("GET /login", handlers.UserLoginPage)
-	http.HandleFunc("POST /login",
-		handlers.UserLogIn(servs.NewUserService(userRepo)))
+	regCommonHandlers()
+	regIAMHandlers(userRepo)
 
 	err = http.ListenAndServe(":8080", nil)
 	if err != nil {
 		slog.Error(err.Error())
 	}
+}
+
+func regCommonHandlers() {
+	http.HandleFunc("/", handlers.NotFoundOrRedirect)
+
+	staticDir := http.Dir(projfs.StaticDir())
+	http.Handle("GET /static/",
+		http.StripPrefix("/static/", http.FileServer(staticDir)))
+}
+
+func regIAMHandlers(userRepo *storage.UserRepo) {
+	iamHandlers := handlers.IAMHandlers{
+		IAMService: servs.NewIAMService(
+			userRepo,
+			passhash.NewPasswordHasher(bcrypt.DefaultCost)),
+	}
+
+	http.HandleFunc("GET /register", iamHandlers.RegisterPage)
+	http.HandleFunc("POST /register", iamHandlers.Register)
+
+	http.HandleFunc("GET /login", iamHandlers.LogInPage)
+	http.HandleFunc("POST /login", iamHandlers.LogIn)
 }

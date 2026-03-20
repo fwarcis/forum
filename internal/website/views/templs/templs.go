@@ -6,7 +6,7 @@ import (
 	"io"
 	"unicode"
 
-	"forum/internal/projfs"
+	"forum/internal/common/system/projfs"
 )
 
 var templatesDir = projfs.TemplatesDir()

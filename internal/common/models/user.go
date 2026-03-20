@@ -5,77 +5,56 @@ import (
 	"fmt"
 	"net/mail"
 	"regexp"
-	"time"
-
-	"github.com/google/uuid"
-	"golang.org/x/crypto/bcrypt"
 )
 
-type Session struct {
-	id        uuid.UUID
-	expiresAt time.Time
+type PasswordHasher interface {
+	PasswordAndHashComparator
+	Generate(password []byte) ([]byte, error)
 }
 
-func newSession() (Session, error) {
-	uuid_, err := uuid.NewRandom()
-	if err != nil {
-		return Session{}, err
-	}
-
-	return Session{
-		id:        uuid_,
-		expiresAt: time.Now().Add(1 * time.Hour),
-	}, nil
-}
-
-func (s Session) ID() uuid.UUID {
-	return s.id
-}
-
-func (s Session) IsExpired() bool {
-	return s.expiresAt.Before(time.Now())
-}
-
-func (s Session) ExpiresAt() time.Time {
-	return s.expiresAt
+type PasswordAndHashComparator interface {
+	Compare(password, hash []byte) error
 }
 
 type User struct {
-	login     string
-	email     string
-	passwHash []byte
+	login    string
+	email    string
+	passHash []byte
+	session  Session
 
-	session Session
+	passAndHashCmpr PasswordAndHashComparator
+	idGener         IDGenerator
 }
 
 func NewUser(
 	login string,
 	email string,
 	password []byte,
-) (User, error) {
+	passHasher PasswordHasher,
+	idGener IDGenerator,
+) (*User, error) {
 	err := errors.Join(
 		checkLogin(login),
 		checkEmail(email),
 		checkPasswLen(string(password)))
 	if err != nil {
-		return User{}, err
+		return nil, err
 	}
 
-	passwHash, err := bcrypt.GenerateFromPassword(
-		[]byte(password), bcrypt.DefaultCost)
+	passHash, err := passHasher.Generate(password)
 	if err != nil {
-		return User{}, err
+		return nil, err
 	}
 
-	sessn, err := newSession()
+	session, err := newSession(idGener)
 	if err != nil {
-		return User{}, err
+		return nil, err
 	}
-	return User{login, email, passwHash, sessn}, err
+	return &User{login, email, passHash, *session, passHasher, idGener}, err
 }
 
-func (u User) CheckPassword(passw []byte) error {
-	return checkPasswWithHash(u.passwHash, passw)
+func (u User) CheckPassword(password []byte) error {
+	return u.passAndHashCmpr.Compare(u.passHash, password)
 }
 
 func (u User) Session() Session {
@@ -83,11 +62,11 @@ func (u User) Session() Session {
 }
 
 func (u *User) GenerateNewSession() error {
-	sessn, err := newSession()
+	sessn, err := newSession(u.idGener)
 	if err != nil {
 		return err
 	}
-	u.session = sessn
+	u.session = *sessn
 	return nil
 }
 
@@ -125,10 +104,6 @@ func checkPasswLen(passw string) error {
 	return nil
 }
 
-func checkPasswWithHash(hash, passw []byte) error {
-	return bcrypt.CompareHashAndPassword(hash, passw)
-}
-
 type validationError struct {
 	prefix string
 	msg    string
@@ -137,3 +112,8 @@ type validationError struct {
 func (e validationError) Error() string {
 	return fmt.Sprintf("%s: %s", e.prefix, e.msg)
 }
+
+var (
+	ErrUserExists   = fmt.Errorf("user already exists")
+	ErrUserNotFound = fmt.Errorf("user not found")
+)
