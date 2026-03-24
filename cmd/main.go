@@ -1,15 +1,14 @@
 package main
 
 import (
+	"database/sql"
 	"log/slog"
 	"net/http"
 	"os"
 
-	"forum/internal/passhash"
-	"forum/internal/projfs"
-	"forum/internal/servs"
-	"forum/internal/storage"
-	"forum/internal/website/handlers"
+	"forum/internal/common/infras/passhash"
+	"forum/internal/common/servs"
+	"forum/internal/common/system/projfs"
 
 	_ "github.com/mattn/go-sqlite3"
 	"golang.org/x/crypto/bcrypt"
@@ -26,7 +25,7 @@ func main() {
 
 	slog.SetDefault(logger)
 
-	db, err := storage.InitSQLite3DB()
+	db, err := InitSQLite3DB()
 	if err != nil {
 		slog.Error(err.Error())
 		return
@@ -62,4 +61,16 @@ func regIAMHandlers(userRepo *storage.UserRepo) {
 
 	http.HandleFunc("GET /login", iamHandlers.LogInPage)
 	http.HandleFunc("POST /login", iamHandlers.LogIn)
+}
+
+func InitSQLite3DB() (*sql.DB, error) {
+	db, err := sql.Open("sqlite3", string(projfs.StorageDir().Join("database.db")))
+	if err != nil {
+		return nil, err
+	}
+
+	query := ``
+
+	_, err = db.Exec(query)
+	return db, err
 }

@@ -1,17 +1,13 @@
-package handls
+package errwriter
 
 import (
 	"log/slog"
 	"net/http"
 
-	"forum/internal/website/views/templs"
+	"forum/internal/website/presents/templs"
 )
 
-func internalServerErrorPlainMsg(w http.ResponseWriter, msg string) {
-	http.Error(w, msg, http.StatusInternalServerError)
-}
-
-func badRequestError(w http.ResponseWriter, details string) error {
+func BadRequestError(w http.ResponseWriter, details string) error {
 	w.WriteHeader(http.StatusBadRequest)
 	return templs.ExecuteError(w, templs.ErrorData{
 		Message: "400 Bad Request",
@@ -19,7 +15,7 @@ func badRequestError(w http.ResponseWriter, details string) error {
 	})
 }
 
-func internalServerError(w http.ResponseWriter, err error) {
+func InternalError(w http.ResponseWriter, err error) {
 	slog.Error(err.Error())
 	w.WriteHeader(http.StatusInternalServerError)
 	err = templs.ExecuteError(w, templs.ErrorData{
@@ -28,7 +24,7 @@ func internalServerError(w http.ResponseWriter, err error) {
 	})
 	if err != nil {
 		slog.Error(err.Error())
-		internalServerErrorPlainMsg(w, err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }
 

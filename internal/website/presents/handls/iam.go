@@ -4,16 +4,11 @@ import (
 	"log/slog"
 	"net/http"
 
-	"forum/internal/common/servs"
-	"forum/internal/website/infras/secur"
-	"forum/internal/website/views/templs"
+	"forum/internal/common/domain/servs"
+	"forum/internal/website/presents/cookies"
+	"forum/internal/website/presents/errwriter"
+	"forum/internal/website/presents/templs"
 )
-
-const sessionCookieName = "session_id"
-
-func newSessionCookie(sessn servs.SessionData) http.Cookie {
-	return secur.NewCookie(sessionCookieName, sessn.ID, sessn.ExpiresAt)
-}
 
 type IAMHandlers struct {
 	IAMService *servs.IAMService
@@ -34,16 +29,9 @@ func (h IAMHandlers) LogInPage(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h IAMHandlers) CheckSession(w http.ResponseWriter, r *http.Request) {
-	cookie, err := r.Cookie(sessionCookieName)
-	if err == nil && cookie.Valid() == nil {
-		return
-	}
-}
-
 func (h IAMHandlers) Register(w http.ResponseWriter, r *http.Request) {
 	if r.Header.Get("Content-Type") != "application/x-www-form-urlencoded" {
-		badRequestError(w, "Wrong Content-Type")
+		errwriter.BadRequestError(w, "Wrong Content-Type")
 		return
 	}
 
@@ -51,33 +39,39 @@ func (h IAMHandlers) Register(w http.ResponseWriter, r *http.Request) {
 		r.Context(),
 		r.FormValue("login"),
 		r.FormValue("email"),
-		[]byte(r.FormValue("password")))
+		r.FormValue("password"))
 	if err != nil {
-		internalServerError(w, err)
+		errwriter.InternalError(w, err)
 		return
 	}
-	sessnCookie := newSessionCookie(*session)
-	http.SetCookie(w, &sessnCookie)
+	http.SetCookie(w, h.newSessionIDCookie(*session))
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
 func (h IAMHandlers) LogIn(w http.ResponseWriter, r *http.Request) {
 	if r.Header.Get("Content-Type") != "application/x-www-form-urlencoded" {
-		badRequestError(w, "Wrong Content-Type")
+		errwriter.BadRequestError(w, "Wrong Content-Type")
 		return
 	}
 
 	session, err := h.IAMService.LogIn(
 		r.Context(),
 		r.FormValue("login"),
-		[]byte(r.FormValue("password")))
+		r.FormValue("password"))
 	if err != nil {
-		internalServerError(w, err)
+		errwriter.InternalError(w, err)
 		return
 	}
-	sessnCookie := newSessionCookie(*session)
-	http.SetCookie(w, &sessnCookie)
+	http.SetCookie(w, h.newSessionIDCookie(*session))
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
+
+func (h IAMHandlers) newSessionIDCookie(sess servs.SessionData) *http.Cookie {
+	return cookies.NewCookie("session_id", sess.ID, sess.ExpiresAt)
+}
+
+func (h IAMHandlers) sessionIDCookie(r *http.Request) (*http.Cookie, error) {
+	return cookies.Cookie(r, "session_id")
 }
